@@ -43,7 +43,7 @@ contract ("Fundraiser", accounts => {
         });
 });
 
-describe ("SetBeneficiary",  () => {
+        describe ("SetBeneficiary",  () => {
     const newBeneficiary = accounts[2];
 
     it("updated the new beneficiary to when called by owner account", async () =>{
@@ -66,4 +66,44 @@ describe ("SetBeneficiary",  () => {
     )
 
 })
-})
+        describe("make a donation", () => {
+            const value=web3.utils.toWei("0.289");
+            const donor=accounts[2];
+            it("increments myDonationsCount", async () =>{
+            const currentDonationsCount= await fundraiser.myDonationsCount({from:donor});
+            await fundraiser.donate({from:donor, value});
+
+            const newDonationsCount = await fundraiser.myDonationsCount({from:donor});
+
+            assert.equal= await (1, newDonationsCount-currentDonationsCount, " myDonationsCount should increment by 1");
+            })
+            it("includes the donation in myDonations", async () => {
+                await fundraiser.donate({from:donor,value});
+                const {values,dates} = await fundraiser.myDonations(
+                    {from:donor}
+                );
+                assert.equal=await (value,values[0],"values should match");
+                assert(dates[0], "date should be present");
+            });
+
+            it(" increases the totalDonations amount", async () =>{
+                const currentTotalDonations= await fundraiser.totalDonations();
+                await fundraiser.donate({from:donor, value});
+                const newTotalDonations = await fundraiser.totalDonations();
+
+                const diff=newTotalDonations-currentTotalDonations;
+                assert.equal = await (diff,value ,"difference should match the donated value");
+            });
+
+            it("increases totalDonations count", async () =>{
+                const currentDonations = await fundraiser.donationsCount();
+                await fundraiser.donate({from:donor,value});
+                const newDonations = await fundraiser.donationsCount();
+                assert.equal = (1, newDonations - currentDonations,"total donations shoukd increment");
+            })
+
+
+
+            });
+        })
+
