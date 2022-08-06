@@ -12,7 +12,7 @@ contract ("Fundraiser", accounts => {
     const owner=accounts[0];
 
 
-    describe("Initialisation", () =>{
+    xdescribe("Initialisation", () =>{
         beforeEach(async () => {
             fundraiser = await FundraiserContract.new(name,url, imageURL,description,beneficiary,owner);
         });
@@ -45,7 +45,7 @@ contract ("Fundraiser", accounts => {
         });
 });
 
-        describe ("SetBeneficiary",  () => {
+        xdescribe ("SetBeneficiary",  () => {
     const newBeneficiary = accounts[2];
 
     it("updated the new beneficiary to when called by owner account", async () =>{
@@ -68,7 +68,7 @@ contract ("Fundraiser", accounts => {
     )
 
 })
-        describe("make a donation", () => {
+        xdescribe("make a donation", () => {
             const value=web3.utils.toWei("0.289");
             const donor=accounts[2];
             it("increments myDonationsCount", async () =>{
@@ -114,7 +114,7 @@ contract ("Fundraiser", accounts => {
 
 
             })
-             describe("withdrawing funds", () =>{
+             xdescribe("withdrawing funds", () =>{
                 beforeEach(async ()=> {
 
                     await fundraiser.donate({from:accounts[2], value:web3.utils.toWei("0.1")}
