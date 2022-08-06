@@ -1,3 +1,5 @@
+const assert = require("assert");
+
 const FundraiserContract = artifacts.require("Fundraiser");
 
 contract ("Fundraiser", accounts => {
@@ -21,7 +23,7 @@ contract ("Fundraiser", accounts => {
 
         it ("gets the url", async () =>{
             const actual = await fundraiser.url();
-            assert.equal(actual, url, "url should match");
+            assert.equal (actual, url, "url should match");
         })
 
         it("gets the image url", async () =>{
@@ -30,16 +32,16 @@ contract ("Fundraiser", accounts => {
         })
         it ("gets the description ", async () => {
             const actual = await fundraiser.description();
-            assert.equal = await (actual,description, "description should match");
+            assert.equal (actual,description, "description should match");
         })
 
         it ("gets the beneficiary", async () =>{
-            const actual=fundraiser.beneficiary();
-            assert.equal=await(actual,beneficiary,"beneficiary addresses should match")
+            const actual= await fundraiser.beneficiary();
+            assert.equal (actual,beneficiary,"beneficiary addresses should match")
         })
         it ("gets the owner", async () =>{
-            const actual=fundraiser.owner();
-            assert.equal=await(actual,owner,"custodian addresses should match")
+            const actual= await fundraiser.owner();
+            assert.equal (actual,owner,"custodian addresses should match")
         });
 });
 
@@ -49,7 +51,7 @@ contract ("Fundraiser", accounts => {
     it("updated the new beneficiary to when called by owner account", async () =>{
         await fundraiser.setBeneficiary(newBeneficiary,{from:owner});
         const actualBeneficiary=await fundraiser.beneficiary();
-        assert.equal=await(actualBeneficiary,newBeneficiary,"beneficiaries should match");
+        assert.equal (actualBeneficiary,newBeneficiary,"beneficiaries should match");
     })
 
     it ("throws an error if not called by the owner", async ()=>{
@@ -58,9 +60,9 @@ contract ("Fundraiser", accounts => {
             assert.fail ("withdraw is availables for owners only");
         }
         catch (err){
-            const expectedError= " Caller is not the Owner";
+            const expectedError= "Ownable: caller is not the owner";
             const actualError = err.reason;
-            assert.equal=await(actualError,expectedError, "should not be permitted");
+            assert.equal(actualError,expectedError, "should not be permitted");
         }
     }
     )
@@ -75,14 +77,14 @@ contract ("Fundraiser", accounts => {
 
             const newDonationsCount = await fundraiser.myDonationsCount({from:donor});
 
-            assert.equal= await (1, newDonationsCount-currentDonationsCount, " myDonationsCount should increment by 1");
+            assert.equal(1, newDonationsCount-currentDonationsCount, " myDonationsCount should increment by 1");
             })
             it("includes the donation in myDonations", async () => {
                 await fundraiser.donate({from:donor,value});
                 const {values,dates} = await fundraiser.myDonations(
                     {from:donor}
                 );
-                assert.equal=await (value,values[0],"values should match");
+                assert.equal(value,values[0],"values should match");
                 assert(dates[0], "date should be present");
             });
 
@@ -92,25 +94,107 @@ contract ("Fundraiser", accounts => {
                 const newTotalDonations = await fundraiser.totalDonations();
 
                 const diff=newTotalDonations-currentTotalDonations;
-                assert.equal = await (diff,value ,"difference should match the donated value");
+                assert.equal (diff,value ,"difference should match the donated value");
             });
 
             it("increases totalDonations count", async () =>{
                 const currentDonations = await fundraiser.donationsCount();
                 await fundraiser.donate({from:donor,value});
                 const newDonations = await fundraiser.donationsCount();
-                assert.equal = (1, newDonations - currentDonations,"total donations shoukd increment");
+                assert.equal (1, newDonations - currentDonations,"total donations shoukd increment");
             })
-            it("enits the DonationsReceived event", async () => {
+            it("emits the DonationsReceived event", async () => {
                 const tx= await fundraiser.donate({from:donor,value});
-                const expectedEvent = "Donation Received";
+                const expectedEvent = "donationsReceived";
                 const actualEvent= tx.logs[0].event;
-                assert.equal = await (actualEvent, expectedEvent, "events should match");
+                assert.equal (actualEvent, expectedEvent, "events should match");
 
             });
 
 
 
-            });
+            })
+             describe("withdrawing funds", () =>{
+                beforeEach(async ()=> {
+
+                    await fundraiser.donate({from:accounts[2], value:web3.utils.toWei("0.1")}
+                    );
+                });
+                describe("access controls", () => {
+                    it("allows only the owner to withdraw", async () =>{
+                        try{
+                            await fundraiser.withdraw({from:accounts[3]});
+                            assert.fail("withdraw available only to owners");
+                        }
+
+                        catch(err) {
+                            const expectedError="Ownable: caller is not the owner";
+                            const actualError=err.reason;
+                            assert.equal (expectedError,actualError,"should not be allowed")
+                        }
+                    });
+                    it ("permits the owner to call the function", async () => {
+                        try{
+                            await fundraiser.withdraw({from:accounts[0]});
+                            assert(true, " no errors thrown");
+                        }
+                        catch (err){
+                            assert.fail("should not have thrown an error");
+                        }
+
+                    })
+
+                    it("transfers balance to the beneficiary", async() =>{
+                        await fundraiser.withdraw({from:owner});
+
+                        const newContractBalance= await web3.eth.getBalance(fundraiser.address);
+                        assert.equal(newContractBalance,0,"contract should have 0 balance");
+
+
+                    });
+
+                    it("emits a withdraw event", async () =>{
+                        const tx = await fundraiser.withdraw({from:owner});
+                        const expectedEvent= "_withdraw";
+                        const actualEvent = tx.logs[0].event;
+
+                        assert.equal(
+                            expectedEvent,actualEvent, "events should match"
+                        );
+                    })
+
+                });
+
+                describe("fallback check to increase total donations amount", () => {
+                    const value = web3.utils.toWei("0.05");
+                    it ("increases the totalDonation amount", async () =>{
+                        const currentTotalDonations= await fundraiser.totalDonations();
+                        await web3.eth.sendTransaction({
+                            to: fundraiser.address, from:accounts[5], value
+                        });
+                        const newTotalDonations = await fundraiser.totalDonations();
+                        const diff = newTotalDonations-currentTotalDonations;
+                        assert.equal (diff,value,"total donations should increment by the value sent ");
+
+                    });
+
+                    it("should increase total donations count",async ()=>{
+                        const currentDonationsCount = await fundraiser.donationsCount();
+                        await web3.eth.sendTransaction({
+                            to: fundraiser.address, from:accounts[5], value
+                        });
+                        const newDonationsCount = await fundraiser.donationsCount();
+                        const diff = newDonationsCount-currentDonationsCount;
+                        assert.equal (1,diff, "total number ofdonations  should increment by one");
+                        
+                    })
+                })
+                
+                })
+             
+
+
+
+
         })
 

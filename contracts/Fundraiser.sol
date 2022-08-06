@@ -20,6 +20,7 @@ struct Donation {
 }
 
 event donationsReceived(address indexed donor, uint value);
+event _withdraw (uint value);
 mapping(address=>Donation[]) private _donations;
 
 
@@ -74,6 +75,21 @@ function myDonations () public view returns (
 
     }
     return (values,dates);
+
+}
+
+
+function withdraw () public  onlyOwner {
+    uint256 balance = address(this).balance;
+    beneficiary.transfer(balance);
+    emit _withdraw(balance);
+
+}
+
+fallback () external payable {
+        totalDonations=totalDonations.add(msg.value);
+    donationsCount++;
+
 
 }
 
