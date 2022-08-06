@@ -101,6 +101,13 @@ contract ("Fundraiser", accounts => {
                 const newDonations = await fundraiser.donationsCount();
                 assert.equal = (1, newDonations - currentDonations,"total donations shoukd increment");
             })
+            it("enits the DonationsReceived event", async () => {
+                const tx= await fundraiser.donate({from:donor,value});
+                const expectedEvent = "Donation Received";
+                const actualEvent= tx.logs[0].event;
+                assert.equal = await (actualEvent, expectedEvent, "events should match");
+
+            });
 
 
 

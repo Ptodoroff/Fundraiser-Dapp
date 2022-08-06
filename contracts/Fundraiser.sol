@@ -19,6 +19,7 @@ struct Donation {
     uint date;
 }
 
+event donationsReceived(address indexed donor, uint value);
 mapping(address=>Donation[]) private _donations;
 
 
@@ -54,6 +55,7 @@ function donate() public payable {
     _donations[msg.sender].push(donation);
     totalDonations=totalDonations.add(msg.value);
     donationsCount++;
+    emit donationsReceived(msg.sender, msg.value);
 
 }
 
