@@ -18,10 +18,11 @@
  *
  */
 
+// require('dotenv').config();
+// const mnemonic = process.env["MNEMONIC"];
+// const infuraProjectId = process.env["INFURA_PROJECT_ID"];
+
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
   /**
@@ -34,6 +35,7 @@ module.exports = {
    * $ truffle test --network <network-name>
    */
 
+  contracts_build_directory: "../client/src/contracts",
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
@@ -41,11 +43,11 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
-    // development: {
-    //  host: "127.0.0.1",     // Localhost (default: none)
-    //  port: 8545,            // Standard Ethereum port (default: none)
-    //  network_id: "*",       // Any network (default: none)
-    // },
+    development: {
+      host: "127.0.0.1",     // Localhost (default: none)
+      port: 8545,            // Standard Ethereum port (default: none)
+      network_id: "*",       // Any network (default: none)
+    },
     //
     // An additional network, but with some advanced options…
     // advanced: {
@@ -59,13 +61,14 @@ module.exports = {
     //
     // Useful for deploying to a public network.
     // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
-    // ropsten: {
-    //   provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/YOUR-PROJECT-ID`),
-    //   network_id: 3,       // Ropsten's id
-    //   gas: 5500000,        // Ropsten has a lower block limit than mainnet
+    // goerli: {
+    //   provider: () => new HDWalletProvider(mnemonic, `https://goerli.infura.io/v3/${infuraProjectId}`),
+    //   network_id: 5,       // Goerli's network id
+    //   chain_id: 5,         // Goerli's chain id
+    //   gas: 5500000,        // Gas limit used for deploys.
     //   confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
     //   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
-    //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+    //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets)
     // },
     //
     // Useful for private networks

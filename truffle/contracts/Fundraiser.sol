@@ -1,6 +1,6 @@
 pragma solidity 0.8.15;
-import "../node_modules/openzeppelin-contracts/access/Ownable.sol";
-import "../node_modules/openzeppelin-contracts/math/SafeMath.sol";
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract Fundraiser  is Ownable{
 using SafeMath for uint256;
