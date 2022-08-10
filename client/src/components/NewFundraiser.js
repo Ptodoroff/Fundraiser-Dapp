@@ -147,7 +147,7 @@ const [state, setState] = useState ({web3: null, accounts: null, contract: null}
          inputProps = {{'aria-label':'bare'}}
          />
         
-        <Button onclick={handleSubmit} variant = "contained" className = {classes.button}>Submit</Button>
+        <Button onClick={handleSubmit} variant = "contained" className = {classes.button}>Submit</Button>
 
 
        
