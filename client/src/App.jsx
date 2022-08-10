@@ -9,6 +9,7 @@ import { makeStyles} from "@material-ui/core/styles";
 import  AppBar  from "@material-ui/core/AppBar";
 import  Toolbar  from "@material-ui/core/Toolbar";
 import  Typography  from "@material-ui/core/Typography";
+import FundraiserCard from "./components/FundraiserCard";
 
 const App = ()=> {
   const [state, setState] = useState ({web3: null, accounts: null, contract: null});
@@ -39,6 +40,14 @@ const useStyles = makeStyles ( {
     flexGrow:1,
   },
 });
+
+const displayFundraisers = () => {
+  return funds.map((fundraiser)=>{
+    return (
+      <FundraiserCard fundraiser={fundraiser}/>
+    )
+  })
+}
 
 const classes = useStyles();
 

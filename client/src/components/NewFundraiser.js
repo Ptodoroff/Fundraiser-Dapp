@@ -45,30 +45,34 @@ const [contract, setContract]= useState(null);
 const [accounts, setAccounts]= useState(null);
 const [state, setState] = useState ({web3: null, accounts: null, contract: null});
 const [web3, setWeb3]=useState(null);
+const [funds, setFunds] = useState(null);
 
     useEffect (()  => {
     
-            const init = async () => {
-                try{
-                  const web3 =  new Web3(Web3.givenProvider || "ws://localhost:8545");
-                  const accounts = await web3.eth.getAccounts();
-                  const networkId = await web3.eth.net.getId();
-                  const deployedNetwork = FactoryContract.networks[networkId];
-                  const instance = new web3.eth.Contract(FactoryContract.abi,
-                    deployedNetwork && deployedNetwork.address,);
-            
-                    setWeb3(web3);
-                    setContract(instance);
-                    setAccounts(accounts);
-                }
-                catch (err){
-                  alert ( "Failed to load web3, accounts or contract. Check console",)   
-                console.error(err);
-              }
-            }
             init();
 
     }, [] );
+
+    const init = async () => {
+        try{
+          const web3 =  new Web3(Web3.givenProvider || "ws://localhost:8545");
+          const accounts = await web3.eth.getAccounts();
+          const networkId = await web3.eth.net.getId();
+          const deployedNetwork = FactoryContract.networks[networkId];
+          const instance = new web3.eth.Contract(FactoryContract.abi,
+            deployedNetwork && deployedNetwork.address,);
+            const funds = await instance.methods.fundraiser(10,0).call();
+    
+            setWeb3(web3);
+            setContract(instance);
+            setAccounts(accounts);
+            setFunds(funds)
+        }
+        catch (err){
+          alert ( "Failed to load web3, accounts or contract. Check console",)   
+        console.error(err);
+      }
+    }
 
     const handleSubmit = async () => {
                   const web3 =  new Web3(Web3.givenProvider || "ws://localhost:8545");
