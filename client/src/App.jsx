@@ -5,6 +5,10 @@ import { BrowserRouter as Router, Route, NavLink} from "react-router-dom";
 import NewFundraiser from "./components/NewFundraiser";
 import Home from "./components/Home";
 import"./App.css";
+import { makeStyles} from "@material-ui/core/styles";
+import  AppBar  from "@material-ui/core/AppBar";
+import  Toolbar  from "@material-ui/core/Toolbar";
+import  Typography  from "@material-ui/core/Typography";
 
 const App = ()=> {
   const [state, setState] = useState ({web3: null, accounts: null, contract: null});
@@ -30,6 +34,14 @@ const App = ()=> {
 init();
 },[]);
 
+const useStyles = makeStyles ( {
+  root: {
+    flexGrow:1,
+  },
+});
+
+const classes = useStyles();
+
 const runExample = async () => {
   const {accounts, conracts } = state;
 
@@ -38,16 +50,16 @@ const runExample = async () => {
 return (
   <Router>
     <div>
-      <nav>
-        <ul>
-          <li>
-            <NavLink to="/">Home</NavLink>
-          </li>
-          <li>
-          <NavLink to="/new/">New</NavLink>
-          </li>
-        </ul>
-      </nav>
+      <AppBar position="static" color="default">
+      <Toolbar>
+        <Typography variant = "h6" color="inherit">
+            <NavLink className="nav-link" to="/">Home</NavLink>
+          </Typography>
+          <NavLink className="nav-link" to="/new/">New</NavLink>
+        </Toolbar>
+        </AppBar>
+
+
       <Route path ="/" exact component={Home} />
       <Route path="/new/" component={NewFundraiser} />
     </div>
