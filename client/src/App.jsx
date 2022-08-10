@@ -1,9 +1,9 @@
 import React, { useState, useEffect} from "react";
-import FactoryContract from "./contracs/Factory.sol";
-import getWeb3 from "./utils/getWeb3";
-import { BrowserRouter as Router, Route, NavLink} from react-router-dom;
-import NewFundraiser from "./NewFundraiser";
-import Home from "./Home";
+import FactoryContract from "./contracts/FundraiserFactory.json";
+import Web3 from "web3"; 
+import { BrowserRouter as Router, Route, NavLink} from "react-router-dom";
+import NewFundraiser from "./components/NewFundraiser";
+import Home from "./components/Home";
 import"./App.css";
 
 const App = ()=> {
@@ -13,8 +13,8 @@ const App = ()=> {
   useEffect (()=>{
     const init = async () => {
     try{
-      const web3 = await getWeb3();
-      const account = await web3.eth.getAccounts();
+      const web3 =  new Web3(Web3.givenProvider || "ws://localhost:8545");
+      const accounts = await web3.eth.getAccounts();
       const networkId = await web3.eth.net.getId();
       const deployedNetwork = FactoryContract.networks[networkId];
       const instance = new web3.eth.Contract(FactoryContract.abi,
@@ -24,7 +24,7 @@ const App = ()=> {
     }
     catch (err){
       alert ( "Failed to load web3, accounts or contract. Check console",)   
-    console.error(error);
+    console.error(err);
   }
 }
 init();
@@ -36,10 +36,6 @@ const runExample = async () => {
 };
 
 return (
-  <>
-  <div>
-    <h1>Fundraiser</h1>
-  </div>
   <Router>
     <div>
       <nav>
@@ -53,21 +49,9 @@ return (
         </ul>
       </nav>
       <Route path ="/" exact component={Home} />
-      <Route pat="/new/" cpmponent={NewFundraiser} />
+      <Route path="/new/" component={NewFundraiser} />
     </div>
     </Router>
-
-
-
-
-
-
-
-
-
-
-  </Router>
-  </>
   );
 
 }
