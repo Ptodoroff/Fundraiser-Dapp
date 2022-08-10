@@ -5,7 +5,7 @@ const Home = () => {
     }, [] );
 
     return (
-        <div className="main.container"> {displayFundraisers()}</div>
+        <div className="main.container``"> {displayFundraisers()}</div>
     )
 }
 
