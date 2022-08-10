@@ -36,15 +36,16 @@ const NewFundraiser = () => {
         }))
 const classes = useStyles();
 const [name, setFundraiserName]= useState(null);
-const [website, setFundraiserWebsite]= useState(null);
+const [url, setFundraiserWebsite]= useState(null);
 const [description, setFundraiserDescription]= useState(null);
-const [image, setImage]= useState(null);
-const [address, setAddress]= useState(null);
+const [imageURL, setImage]= useState(null);
+const [beneficiary, setAddress]= useState(null);
 const [custodian, setCustodian]= useState(null);
 const [contract, setContract]= useState(null);
 const [accounts, setAccounts]= useState(null);
-const [submit, handleSubmit] = useState(null);
 const [state, setState] = useState ({web3: null, accounts: null, contract: null});
+const [web3, setWeb3]=useState(null);
+
     useEffect (()  => {
     
             const init = async () => {
@@ -56,7 +57,9 @@ const [state, setState] = useState ({web3: null, accounts: null, contract: null}
                   const instance = new web3.eth.Contract(FactoryContract.abi,
                     deployedNetwork && deployedNetwork.address,);
             
-                  setState ({web3,accounts, contract: instance});
+                    setWeb3(web3);
+                    setContract(instance);
+                    setAccounts(accounts);
                 }
                 catch (err){
                   alert ( "Failed to load web3, accounts or contract. Check console",)   
@@ -66,6 +69,17 @@ const [state, setState] = useState ({web3: null, accounts: null, contract: null}
             init();
 
     }, [] );
+
+    const handleSubmit = async () => {
+                  const web3 =  new Web3(Web3.givenProvider || "ws://localhost:8545");
+                  const accounts = await web3.eth.getAccounts();
+                  const networkId = await web3.eth.net.getId();
+                  const deployedNetwork = FactoryContract.networks[networkId];
+                  const contract = new web3.eth.Contract(FactoryContract.abi,
+                    deployedNetwork && deployedNetwork.address,);
+                    await contract.methods.createFundraiser(name, url, imageURL, description, beneficiary).send({ from: accounts[0] });
+                    alert('Successfully created fundraiser')
+    }
 
     return (
         <>
@@ -114,11 +128,11 @@ const [state, setState] = useState ({web3: null, accounts: null, contract: null}
          inputProps = {{'aria-label':'bare'}}
          />
 
-        <label>Address</label>
+        <label> Beneficiary Address</label>
         <TextField
          id="outlined-bare"
          className={classes.textField}
-         placeholder="Fundraiser Address"
+         placeholder="Beneficiary"
          margin = "normal"
          onChange={(e)=> setAddress(e.target.value)}
          variant = "outlined"
